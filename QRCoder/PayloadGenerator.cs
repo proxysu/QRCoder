@@ -445,7 +445,7 @@ namespace QRCoder
             public override string ToString()
             {
                 string payload = string.Empty;
-                if (outputType.Equals(ContactOutputType.MeCard))
+                if (outputType == ContactOutputType.MeCard)
                 {
                     payload += "MECARD+\r\n";
                     if (!string.IsNullOrEmpty(firstname) && !string.IsNullOrEmpty(lastname))
@@ -497,9 +497,9 @@ namespace QRCoder
                     if (!string.IsNullOrEmpty(phone))
                     {
                         payload += $"TEL;";
-                        if (outputType.Equals(ContactOutputType.VCard21))
+                        if (outputType == ContactOutputType.VCard21)
                             payload += $"HOME;VOICE:{phone}";
-                        else if (outputType.Equals(ContactOutputType.VCard3))
+                        else if (outputType == ContactOutputType.VCard3)
                             payload += $"TYPE=HOME,VOICE:{phone}";
                         else
                             payload += $"TYPE=home,voice;VALUE=uri:tel:{phone}";
@@ -509,9 +509,9 @@ namespace QRCoder
                     if (!string.IsNullOrEmpty(mobilePhone))
                     {
                         payload += $"TEL;";
-                        if (outputType.Equals(ContactOutputType.VCard21))
+                        if (outputType == ContactOutputType.VCard21)
                             payload += $"HOME;CELL:{mobilePhone}";
-                        else if (outputType.Equals(ContactOutputType.VCard3))
+                        else if (outputType == ContactOutputType.VCard3)
                             payload += $"TYPE=HOME,CELL:{mobilePhone}";
                         else
                             payload += $"TYPE=home,cell;VALUE=uri:tel:{mobilePhone}";
@@ -521,9 +521,9 @@ namespace QRCoder
                     if (!string.IsNullOrEmpty(workPhone))
                     {
                         payload += $"TEL;";
-                        if (outputType.Equals(ContactOutputType.VCard21))
+                        if (outputType == ContactOutputType.VCard21)
                             payload += $"WORK;VOICE:{workPhone}";
-                        else if (outputType.Equals(ContactOutputType.VCard3))
+                        else if (outputType == ContactOutputType.VCard3)
                             payload += $"TYPE=WORK,VOICE:{workPhone}";
                         else
                             payload += $"TYPE=work,voice;VALUE=uri:tel:{workPhone}";
@@ -532,9 +532,9 @@ namespace QRCoder
 
 
                     payload += "ADR;";
-                    if (outputType.Equals(ContactOutputType.VCard21))
+                    if (outputType == ContactOutputType.VCard21)
                         payload += "HOME;PREF:";
-                    else if (outputType.Equals(ContactOutputType.VCard3))
+                    else if (outputType == ContactOutputType.VCard3)
                         payload += "TYPE=HOME,PREF:";
                     else
                         payload += "TYPE=home,pref:";
@@ -557,7 +557,7 @@ namespace QRCoder
                         payload += $"EMAIL:{email}\r\n";
                     if (!string.IsNullOrEmpty(note))
                         payload += $"NOTE:{note}\r\n";
-                    if (!outputType.Equals(ContactOutputType.VCard21) && !string.IsNullOrEmpty(nickname))
+                    if (outputType != ContactOutputType.VCard21 && !string.IsNullOrEmpty(nickname))
                         payload += $"NICKNAME:{nickname}\r\n";
 
                     payload += "END:VCARD";
@@ -623,7 +623,7 @@ namespace QRCoder
             {
                 string query = null;
 
-                var queryValues = new List<KeyValuePair<string,string>>{
+                var queryValues = new KeyValuePair<string,string>[]{
                   new KeyValuePair<string, string>(nameof(label), label),
                   new KeyValuePair<string, string>(nameof(message), message),
                   new KeyValuePair<string, string>(nameof(amount), amount.HasValue ? amount.Value.ToString("#.########", CultureInfo.InvariantCulture) : null)
@@ -689,9 +689,9 @@ namespace QRCoder
                 this.requestedDateOfPayment = requestedDateOfPayment;
                 this.debitor = debitor;
 
-                if (iban.IsQrIban && !reference.RefType.Equals(Reference.ReferenceType.QRR))
+                if (iban.IsQrIban && reference.RefType != Reference.ReferenceType.QRR)
                     throw new SwissQrCodeException("If QR-IBAN is used, you have to choose \"QRR\" as reference type!");
-                if (!iban.IsQrIban && reference.RefType.Equals(Reference.ReferenceType.QRR))
+                if (!iban.IsQrIban && reference.RefType == Reference.ReferenceType.QRR)
                     throw new SwissQrCodeException("If non QR-IBAN is used, you have to choose either \"SCOR\" or \"NON\" as reference type!");
                 this.reference = reference;
 
@@ -772,17 +772,17 @@ namespace QRCoder
                     this.referenceType = referenceType;
                     this.referenceTextType = referenceTextType;
 
-                    if (referenceType.Equals(ReferenceType.NON) && reference != null)
+                    if (referenceType == ReferenceType.NON && reference != null)
                         throw new SwissQrCodeReferenceException("Reference is only allowed when referenceType not equals \"NON\"");
-                    if (!referenceType.Equals(ReferenceType.NON) && reference != null && referenceTextType == null)
+                    if (referenceType != ReferenceType.NON && reference != null && referenceTextType == null)
                         throw new SwissQrCodeReferenceException("You have to set an ReferenceTextType when using the reference text.");
-                    if (referenceTextType.Equals(ReferenceTextType.QrReference) && reference != null && (reference.Length > 27))
+                    if (referenceTextType == ReferenceTextType.QrReference && reference != null && (reference.Length > 27))
                         throw new SwissQrCodeReferenceException("QR-references have to be shorter than 28 chars.");
-                    if (referenceTextType.Equals(ReferenceTextType.QrReference) && reference != null && !Regex.IsMatch(reference, @"^[0-9]+$"))
+                    if (referenceTextType == ReferenceTextType.QrReference && reference != null && !Regex.IsMatch(reference, @"^[0-9]+$"))
                         throw new SwissQrCodeReferenceException("QR-reference must exist out of digits only.");
-                    if (referenceTextType.Equals(ReferenceTextType.QrReference) && reference != null && !ChecksumMod10(reference))
+                    if (referenceTextType == ReferenceTextType.QrReference && reference != null && !ChecksumMod10(reference))
                         throw new SwissQrCodeReferenceException("QR-references is invalid. Checksum error.");
-                    if (referenceTextType.Equals(ReferenceTextType.CreditorReferenceIso11649) && reference != null && (reference.Length > 25))
+                    if (referenceTextType == ReferenceTextType.CreditorReferenceIso11649 && reference != null && (reference.Length > 25))
                         throw new SwissQrCodeReferenceException("Creditor references (ISO 11649) have to be shorter than 26 chars.");
 
                     this.reference = reference;                   
@@ -843,8 +843,10 @@ namespace QRCoder
                 /// <param name="ibanType">Type of IBAN (normal or QR-IBAN)</param>
                 public Iban(string iban, IbanType ibanType)
                 {
-                    if (!IsValidIban(iban))
+                    if (ibanType == IbanType.Iban && !IsValidIban(iban))
                         throw new SwissQrCodeIbanException("The IBAN entered isn't valid.");
+                    if (ibanType == IbanType.QrIban && !IsValidQRIban(iban))
+                        throw new SwissQrCodeIbanException("The QR-IBAN entered isn't valid.");
                     if (!iban.StartsWith("CH") && !iban.StartsWith("LI"))
                         throw new SwissQrCodeIbanException("The IBAN must start with \"CH\" or \"LI\".");
                     this.iban = iban;
@@ -853,7 +855,7 @@ namespace QRCoder
 
                 public bool IsQrIban
                 {
-                    get { return ibanType.Equals(IbanType.QrIban); }
+                    get { return ibanType == IbanType.QrIban; }
                 }
 
                 public override string ToString()
@@ -887,6 +889,7 @@ namespace QRCoder
 
             public class Contact
             {
+                private static readonly HashSet<string> twoLetterCodes = ValidTwoLetterCodes();
                 private string br = "\r\n";
                 private string name, streetOrAddressline1, houseNumberOrAddressline2, zipCode, city, country;
                 private AddressType adrType;
@@ -900,6 +903,7 @@ namespace QRCoder
                 /// <param name="country">Two-letter country code as defined in ISO 3166-1</param>
                 /// <param name="street">Streetname without house number</param>
                 /// <param name="houseNumber">House number</param>
+                [Obsolete("This constructor is deprecated. Use WithStructuredAddress instead.")]
                 public Contact(string name, string zipCode, string city, string country, string street = null, string houseNumber = null) : this (name, zipCode, city, country, street, houseNumber, AddressType.StructuredAddress)
                 {
                 }
@@ -912,16 +916,26 @@ namespace QRCoder
                 /// <param name="country">Two-letter country code as defined in ISO 3166-1</param>
                 /// <param name="addressLine1">Adress line 1</param>
                 /// <param name="addressLine2">Adress line 2</param>
+                [Obsolete("This constructor is deprecated. Use WithCombinedAddress instead.")]
                 public Contact(string name, string country, string addressLine1, string addressLine2) : this(name, null, null, country, addressLine1, addressLine2, AddressType.CombinedAddress)
                 {
                 }
 
+                public static Contact WithStructuredAddress(string name, string zipCode, string city, string country, string street = null, string houseNumber = null)
+                {
+                    return new Contact(name, zipCode, city, country, street, houseNumber, AddressType.StructuredAddress);
+                }
+
+                public static Contact WithCombinedAddress(string name, string country, string addressLine1, string addressLine2)
+                {
+                    return new Contact(name, null, null, country, addressLine1, addressLine2, AddressType.CombinedAddress);
+                }
 
 
                 private Contact(string name, string zipCode, string city, string country, string streetOrAddressline1, string houseNumberOrAddressline2, AddressType addressType)
                 {
                     //Pattern extracted from https://qr-validation.iso-payments.ch as explained in https://github.com/codebude/QRCoder/issues/97
-                    var charsetPattern = @"^([a-zA-Z0-9\.,;:'\ \-/\(\)?\*\[\]\{\}\\`´~ ]|[!""#%&<>÷=@_$£]|[àáâäçèéêëìíîïñòóôöùúûüýßÀÁÂÄÇÈÉÊËÌÍÎÏÒÓÔÖÙÚÛÜÑ])*$";
+                    var charsetPattern = @"^([a-zA-Z0-9\.,;:'\ \+\-/\(\)?\*\[\]\{\}\\`´~ ]|[!""#%&<>÷=@_$£]|[àáâäçèéêëìíîïñòóôöùúûüýßÀÁÂÄÇÈÉÊËÌÍÎÏÒÓÔÖÙÚÛÜÑ])*$";
 
                     this.adrType = addressType;
 
@@ -933,7 +947,7 @@ namespace QRCoder
                         throw new SwissQrCodeContactException($"Name must match the following pattern as defined in pain.001: {charsetPattern}");
                     this.name = name;
 
-                    if (AddressType.StructuredAddress.Equals(this.adrType))
+                    if (AddressType.StructuredAddress == this.adrType)
                     {
                         if (!string.IsNullOrEmpty(streetOrAddressline1) && (streetOrAddressline1.Length > 70))
                             throw new SwissQrCodeContactException("Street must be shorter than 71 chars.");
@@ -962,7 +976,7 @@ namespace QRCoder
                         this.houseNumberOrAddressline2 = houseNumberOrAddressline2;
                     }
 
-                    if (AddressType.StructuredAddress.Equals(this.adrType)) {
+                    if (AddressType.StructuredAddress == this.adrType) {
                         if (string.IsNullOrEmpty(zipCode))
                             throw new SwissQrCodeContactException("Zip code must not be empty.");
                         if (zipCode.Length > 16)
@@ -984,20 +998,23 @@ namespace QRCoder
                         this.zipCode = this.city = string.Empty;
                     }
 
-#if NET40
-                    if (!CultureInfo.GetCultures(CultureTypes.SpecificCultures).Where(x => new RegionInfo(x.LCID).TwoLetterISORegionName.ToUpper() == country.ToUpper()).Any())
+                    if (!IsValidTwoLetterCode(country))
                         throw new SwissQrCodeContactException("Country must be a valid \"two letter\" country code as defined by  ISO 3166-1, but it isn't.");
-#else
-                    try { var cultureCheck = new CultureInfo(country.ToUpper()); }
-                    catch { throw new SwissQrCodeContactException("Country must be a valid \"two letter\" country code as defined by  ISO 3166-1, but it isn't."); }
-#endif
 
                     this.country = country;
                 }
 
+                private static bool IsValidTwoLetterCode(string code) => twoLetterCodes.Contains(code);
+
+                private static HashSet<string> ValidTwoLetterCodes()
+                {
+                    string[] codes = new string[]{ "AF", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BQ", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "CV", "KH", "CM", "CA", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CW", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "SZ", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KP", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "MK", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SX", "SK", "SI", "SB", "SO", "ZA", "GS", "SS", "ES", "LK", "SD", "SR", "SJ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW", "AX" };
+                    return new HashSet<string>(codes, StringComparer.OrdinalIgnoreCase);
+                }
+
                 public override string ToString()
                 {
-                    string contactData = $"{(AddressType.StructuredAddress.Equals(adrType) ? "S" : "K")}{br}"; //AdrTp
+                    string contactData = $"{(AddressType.StructuredAddress == adrType ? "S" : "K")}{br}"; //AdrTp
                     contactData += name.Replace("\n", "") + br; //Name
                     contactData += (!string.IsNullOrEmpty(streetOrAddressline1) ? streetOrAddressline1.Replace("\n","") : string.Empty) + br; //StrtNmOrAdrLine1
                     contactData += (!string.IsNullOrEmpty(houseNumberOrAddressline2) ? houseNumberOrAddressline2.Replace("\n", "") : string.Empty) + br; //BldgNbOrAdrLine2
@@ -1081,7 +1098,7 @@ namespace QRCoder
 
                 //S-QR specification 2.0, chapter 4.2.3
                 if (SwissQrCodePayload.EndsWith(br))
-                    SwissQrCodePayload = SwissQrCodePayload.Trim(br.ToCharArray());
+                    SwissQrCodePayload = SwissQrCodePayload.Remove(SwissQrCodePayload.Length - br.Length);
 
                 return SwissQrCodePayload;
             }
@@ -1165,9 +1182,9 @@ namespace QRCoder
                 if (purposeOfCreditTransfer.Length > 4)
                     throw new GirocodeException("Purpose of credit transfer can only have 4 chars at maximum.");
                 this.purposeOfCreditTransfer = purposeOfCreditTransfer;
-                if (typeOfRemittance.Equals(TypeOfRemittance.Unstructured) && remittanceInformation.Length > 140)
+                if (typeOfRemittance == TypeOfRemittance.Unstructured && remittanceInformation.Length > 140)
                     throw new GirocodeException("Unstructured reference texts have to shorter than 141 chars.");
-                if (typeOfRemittance.Equals(TypeOfRemittance.Structured) && remittanceInformation.Length > 35)
+                if (typeOfRemittance == TypeOfRemittance.Structured && remittanceInformation.Length > 35)
                     throw new GirocodeException("Structured reference texts have to shorter than 36 chars.");
                 this.typeOfRemittance = typeOfRemittance;
                 this.remittanceInformation = remittanceInformation;
@@ -1179,7 +1196,7 @@ namespace QRCoder
             public override string ToString()
             {
                 var girocodePayload = "BCD" + br;
-                girocodePayload += (version.Equals(GirocodeVersion.Version1) ? "001" : "002") + br;
+                girocodePayload += ((version == GirocodeVersion.Version1) ? "001" : "002") + br;
                 girocodePayload += (int)encoding + 1 + br;
                 girocodePayload += "SCT" + br;
                 girocodePayload += bic + br;
@@ -1187,10 +1204,10 @@ namespace QRCoder
                 girocodePayload += iban + br;
                 girocodePayload += $"EUR{amount:0.00}".Replace(",",".") + br;
                 girocodePayload += purposeOfCreditTransfer + br;
-                girocodePayload += (typeOfRemittance.Equals(TypeOfRemittance.Structured)
+                girocodePayload += ((typeOfRemittance == TypeOfRemittance.Structured)
                     ? remittanceInformation
                     : string.Empty) + br;
-                girocodePayload += (typeOfRemittance.Equals(TypeOfRemittance.Unstructured)
+                girocodePayload += ((typeOfRemittance == TypeOfRemittance.Unstructured)
                     ? remittanceInformation
                     : string.Empty) + br;
                 girocodePayload += messageToGirocodeUser;
@@ -1342,12 +1359,12 @@ namespace QRCoder
                 //Loaded via "contact-constructor"
                 if (internalMode == 1)
                 {
-                    if (!authority.Equals(AuthorityType.contact) && !authority.Equals(AuthorityType.contact_v2))
+                    if (authority != AuthorityType.contact && authority != AuthorityType.contact_v2)
                         throw new BezahlCodeException("The constructor without an amount may only ne used with authority types 'contact' and 'contact_v2'.");
-                    if (authority.Equals(AuthorityType.contact) && (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(bnc)))
+                    if (authority == AuthorityType.contact && (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(bnc)))
                         throw new BezahlCodeException("When using authority type 'contact' the parameters 'account' and 'bnc' must be set.");
 
-                    if (!authority.Equals(AuthorityType.contact_v2))
+                    if (authority != AuthorityType.contact_v2)
                     {
                         var oldFilled = (!string.IsNullOrEmpty(account) && !string.IsNullOrEmpty(bnc));
                         var newFilled = (!string.IsNullOrEmpty(iban) && !string.IsNullOrEmpty(bic));
@@ -1357,17 +1374,17 @@ namespace QRCoder
                 }
                 else if (internalMode == 2)
                 {
-                    if (!authority.Equals(AuthorityType.periodicsinglepayment) && !authority.Equals(AuthorityType.singledirectdebit) && !authority.Equals(AuthorityType.singlepayment))
+                    if (authority != AuthorityType.periodicsinglepayment && authority != AuthorityType.singledirectdebit && authority != AuthorityType.singlepayment)
                         throw new BezahlCodeException("The constructor with 'account' and 'bnc' may only be used with 'non SEPA' authority types. Either choose another authority type or switch constructor.");
-                    if (authority.Equals(AuthorityType.periodicsinglepayment) && (string.IsNullOrEmpty(periodicTimeunit) || periodicTimeunitRotation == 0))
+                    if (authority == AuthorityType.periodicsinglepayment && (string.IsNullOrEmpty(periodicTimeunit) || periodicTimeunitRotation == 0))
                         throw new BezahlCodeException("When using 'periodicsinglepayment' as authority type, the parameters 'periodicTimeunit' and 'periodicTimeunitRotation' must be set.");
 
                 }
                 else if (internalMode == 3)
                 {
-                    if (!authority.Equals(AuthorityType.periodicsinglepaymentsepa) && !authority.Equals(AuthorityType.singledirectdebitsepa) && !authority.Equals(AuthorityType.singlepaymentsepa))
+                    if (authority != AuthorityType.periodicsinglepaymentsepa && authority != AuthorityType.singledirectdebitsepa && authority != AuthorityType.singlepaymentsepa)
                         throw new BezahlCodeException("The constructor with 'iban' and 'bic' may only be used with 'SEPA' authority types. Either choose another authority type or switch constructor.");
-                    if (authority.Equals(AuthorityType.periodicsinglepaymentsepa) && (string.IsNullOrEmpty(periodicTimeunit) || periodicTimeunitRotation == 0))
+                    if (authority == AuthorityType.periodicsinglepaymentsepa && (string.IsNullOrEmpty(periodicTimeunit) || periodicTimeunitRotation == 0))
                         throw new BezahlCodeException("When using 'periodicsinglepaymentsepa' as authority type, the parameters 'periodicTimeunit' and 'periodicTimeunitRotation' must be set.");
                 }
 
@@ -1385,7 +1402,7 @@ namespace QRCoder
                 var newWayFilled = (!string.IsNullOrEmpty(iban) && !string.IsNullOrEmpty(bic));
 
                 //Non-SEPA payment types
-                if (authority.Equals(AuthorityType.periodicsinglepayment) || authority.Equals(AuthorityType.singledirectdebit) || authority.Equals(AuthorityType.singlepayment) || authority.Equals(AuthorityType.contact) || (authority.Equals(AuthorityType.contact_v2) && oldWayFilled))
+                if (authority == AuthorityType.periodicsinglepayment || authority == AuthorityType.singledirectdebit || authority == AuthorityType.singlepayment || authority == AuthorityType.contact || (authority == AuthorityType.contact_v2 && oldWayFilled))
                 {
                     if (!Regex.IsMatch(account.Replace(" ", ""), @"^[0-9]{1,9}$"))
                         throw new BezahlCodeException("The account entered isn't valid.");
@@ -1394,7 +1411,7 @@ namespace QRCoder
                         throw new BezahlCodeException("The bnc entered isn't valid.");
                     this.bnc = bnc.Replace(" ", "").ToUpper();
 
-                    if (!authority.Equals(AuthorityType.contact) && !authority.Equals(AuthorityType.contact_v2))
+                    if (authority != AuthorityType.contact && authority != AuthorityType.contact_v2)
                     {
                         if (postingKey < 0 || postingKey >= 100)
                             throw new BezahlCodeException("PostingKey must be within 0 and 99.");
@@ -1403,7 +1420,7 @@ namespace QRCoder
                 }
 
                 //SEPA payment types
-                if (authority.Equals(AuthorityType.periodicsinglepaymentsepa) || authority.Equals(AuthorityType.singledirectdebitsepa) || authority.Equals(AuthorityType.singlepaymentsepa) || (authority.Equals(AuthorityType.contact_v2) && newWayFilled))
+                if (authority == AuthorityType.periodicsinglepaymentsepa || authority == AuthorityType.singledirectdebitsepa || authority == AuthorityType.singlepaymentsepa || (authority == AuthorityType.contact_v2 && newWayFilled))
                 {
                     if (!IsValidIban(iban))
                         throw new BezahlCodeException("The IBAN entered isn't valid.");
@@ -1412,7 +1429,7 @@ namespace QRCoder
                         throw new BezahlCodeException("The BIC entered isn't valid.");
                     this.bic = bic.Replace(" ", "").ToUpper();
 
-                    if (!authority.Equals(AuthorityType.contact_v2))
+                    if (authority != AuthorityType.contact_v2)
                     {
                         if (sepaReference.Length > 35)
                             throw new BezahlCodeException("SEPA reference texts have to be shorter than 36 chars.");
@@ -1430,7 +1447,7 @@ namespace QRCoder
                 }
 
                 //Checks for all payment types
-                if (!authority.Equals(AuthorityType.contact) && !authority.Equals(AuthorityType.contact_v2))
+                if (authority != AuthorityType.contact && authority != AuthorityType.contact_v2)
                 {
                     if (amount.ToString().Replace(",", ".").Contains(".") && amount.ToString().Replace(",", ".").Split('.')[1].TrimEnd('0').Length > 2)
                         throw new BezahlCodeException("Amount must have less than 3 digits after decimal point.");
@@ -1449,7 +1466,7 @@ namespace QRCoder
                         this.executionDate = (DateTime)executionDate;
                     }
 
-                    if (authority.Equals(AuthorityType.periodicsinglepayment) || authority.Equals(AuthorityType.periodicsinglepaymentsepa))
+                    if (authority == AuthorityType.periodicsinglepayment || authority == AuthorityType.periodicsinglepaymentsepa)
                     {
                         if (periodicTimeunit.ToUpper() != "M" && periodicTimeunit.ToUpper() != "W")
                             throw new BezahlCodeException("The periodicTimeunit must be either 'M' (monthly) or 'W' (weekly).");
@@ -1475,11 +1492,11 @@ namespace QRCoder
 
                 bezahlCodePayload += $"name={Uri.EscapeDataString(name)}&";
 
-                if (!authority.Equals(AuthorityType.contact) && !authority.Equals(AuthorityType.contact_v2))
+                if (authority != AuthorityType.contact && authority != AuthorityType.contact_v2)
                 {
                     //Handle what is same for all payments
 
-                    if (authority.Equals(AuthorityType.periodicsinglepayment) || authority.Equals(AuthorityType.singledirectdebit) || authority.Equals(AuthorityType.singlepayment))
+                    if (authority == AuthorityType.periodicsinglepayment || authority == AuthorityType.singledirectdebit || authority == AuthorityType.singlepayment)
                     {
                         bezahlCodePayload += $"account={account}&";
                         bezahlCodePayload += $"bnc={bnc}&";
@@ -1494,7 +1511,7 @@ namespace QRCoder
                         if (!string.IsNullOrEmpty(sepaReference))
                             bezahlCodePayload += $"separeference={ Uri.EscapeDataString(sepaReference)}&";
 
-                        if (authority.Equals(AuthorityType.singledirectdebitsepa))
+                        if (authority == AuthorityType.singledirectdebitsepa)
                         {
                             if (!string.IsNullOrEmpty(creditorId))
                                 bezahlCodePayload += $"creditorid={ Uri.EscapeDataString(creditorId)}&";
@@ -1511,7 +1528,7 @@ namespace QRCoder
                     bezahlCodePayload += $"currency={currency}&";
                     bezahlCodePayload += $"executiondate={executionDate.ToString("ddMMyyyy")}&";
 
-                    if (authority.Equals(AuthorityType.periodicsinglepayment) || authority.Equals(AuthorityType.periodicsinglepaymentsepa))
+                    if (authority == AuthorityType.periodicsinglepayment || authority == AuthorityType.periodicsinglepaymentsepa)
                     {
                         bezahlCodePayload += $"periodictimeunit={periodicTimeunit}&";
                         bezahlCodePayload += $"periodictimeunitrotation={periodicTimeunitRotation}&";
@@ -1524,12 +1541,12 @@ namespace QRCoder
                 else
                 {
                     //Handle what is same for all contacts
-                    if (authority.Equals(AuthorityType.contact))
+                    if (authority == AuthorityType.contact)
                     {
                         bezahlCodePayload += $"account={account}&";
                         bezahlCodePayload += $"bnc={bnc}&";
                     }
-                    else if (authority.Equals(AuthorityType.contact_v2))
+                    else if (authority == AuthorityType.contact_v2)
                     {
                         if (!string.IsNullOrEmpty(account) && !string.IsNullOrEmpty(bnc))
                         {
@@ -1832,7 +1849,7 @@ namespace QRCoder
                 vEvent += $"DTEND:{this.end}{Environment.NewLine}";
                 vEvent += "END:VEVENT";
 
-                if (this.encoding.Equals(EventEncoding.iCalComplete))
+                if (this.encoding == EventEncoding.iCalComplete)
                     vEvent = $@"BEGIN:VCALENDAR{Environment.NewLine}VERSION:2.0{Environment.NewLine}{vEvent}{Environment.NewLine}END:VCALENDAR";
 
                 return vEvent;
@@ -1991,38 +2008,51 @@ namespace QRCoder
 
         public class ShadowSocksConfig : Payload
         {
-            private readonly string hostname, password, tag, methodStr;
+            private readonly string hostname, password, tag, methodStr, parameter;
             private readonly Method method;
             private readonly int port;
             private Dictionary<string, string> encryptionTexts = new Dictionary<string, string>() {
+                { "Chacha20IetfPoly1305", "chacha20-ietf-poly1305" },
+                { "Aes128Gcm", "aes-128-gcm" },
+                { "Aes192Gcm", "aes-192-gcm" },
+                { "Aes256Gcm", "aes-256-gcm" },
+
+                { "XChacha20IetfPoly1305", "xchacha20-ietf-poly1305" },
+
                 { "Aes128Cfb", "aes-128-cfb" },
-                { "Aes128Cfb1", "aes-128-cfb1" },
-                { "Aes128Cfb8", "aes-128-cfb8" },
-                { "Aes128Ctr", "aes-128-ctr" },
-                { "Aes128Ofb", "aes-128-ofb" },
                 { "Aes192Cfb", "aes-192-cfb" },
-                { "Aes192Cfb1", "aes-192-cfb1" },
-                { "Aes192Cfb8", "aes-192-cfb8" },
+                { "Aes256Cfb", "aes-256-cfb" },
+                { "Aes128Ctr", "aes-128-ctr" },
                 { "Aes192Ctr", "aes-192-ctr" },
-                { "Aes192Ofb", "aes-192-ofb" },
-                { "Aes256Cb", "aes-256-cfb" },
-                { "Aes256Cfb1", "aes-256-cfb1" },
-                { "Aes256Cfb8", "aes-256-cfb8" },
                 { "Aes256Ctr", "aes-256-ctr" },
-                { "Aes256Ofb", "aes-256-ofb" },
-                { "BfCfb", "bf-cfb" },
                 { "Camellia128Cfb", "camellia-128-cfb" },
                 { "Camellia192Cfb", "camellia-192-cfb" },
                 { "Camellia256Cfb", "camellia-256-cfb" },
-                { "Cast5Cfb", "cast5-cfb" },
+                { "Chacha20Ietf", "chacha20-ietf" },
+
+                { "Aes256Cb", "aes-256-cfb" },
+
+                { "Aes128Ofb", "aes-128-ofb" },
+                { "Aes192Ofb", "aes-192-ofb" },
+                { "Aes256Ofb", "aes-256-ofb" },
+                { "Aes128Cfb1", "aes-128-cfb1" },
+                { "Aes192Cfb1", "aes-192-cfb1" },
+                { "Aes256Cfb1", "aes-256-cfb1" },
+                { "Aes128Cfb8", "aes-128-cfb8" },
+                { "Aes192Cfb8", "aes-192-cfb8" },
+                { "Aes256Cfb8", "aes-256-cfb8" },
+
                 { "Chacha20", "chacha20" },
+                { "BfCfb", "bf-cfb" },
+                { "Rc4Md5", "rc4-md5" },
+                { "Salsa20", "salsa20" },
+
                 { "DesCfb", "des-cfb" },
                 { "IdeaCfb", "idea-cfb" },
                 { "Rc2Cfb", "rc2-cfb" },
-                { "Rc4", "rc4" },
-                { "Rc4Md5", "rc4-md5" },
-                { "Salsa20", "salsa20" },
+                { "Cast5Cfb", "cast5-cfb" },
                 { "Salsa20Ctr", "salsa20-ctr" },
+                { "Rc4", "rc4" },
                 { "SeedCfb", "seed-cfb" },
                 { "Table", "table" }
             };
@@ -2035,9 +2065,69 @@ namespace QRCoder
             /// <param name="password">Password of the SS proxy</param>
             /// <param name="method">Encryption type</param>
             /// <param name="tag">Optional tag line</param>
-            public ShadowSocksConfig(string hostname, int port, string password, Method method, string tag = null)
+            public ShadowSocksConfig(string hostname, int port, string password, Method method, string tag = null) :
+                this(hostname, port, password, method, null, tag)
+            { }
+
+            public ShadowSocksConfig(string hostname, int port, string password, Method method, string plugin, string pluginOption, string tag = null) :
+                this(hostname, port, password, method, new Dictionary<string, string>
+                {
+                    ["plugin"] = plugin + (
+                    string.IsNullOrEmpty(pluginOption)
+                    ? ""
+                    : $";{pluginOption}"
+                )
+                }, tag)
+            { }
+            private Dictionary<string, string> UrlEncodeTable = new Dictionary<string, string>
             {
-                this.hostname = hostname;
+                [" "] = "+",
+                ["\0"] = "%00",
+                ["\t"] = "%09",
+                ["\n"] = "%0a",
+                ["\r"] = "%0d",
+                ["\""] = "%22",
+                ["#"] = "%23",
+                ["$"] = "%24",
+                ["%"] = "%25",
+                ["&"] = "%26",
+                ["'"] = "%27",
+                ["+"] = "%2b",
+                [","] = "%2c",
+                ["/"] = "%2f",
+                [":"] = "%3a",
+                [";"] = "%3b",
+                ["<"] = "%3c",
+                ["="] = "%3d",
+                [">"] = "%3e",
+                ["?"] = "%3f",
+                ["@"] = "%40",
+                ["["] = "%5b",
+                ["\\"] = "%5c",
+                ["]"] = "%5d",
+                ["^"] = "%5e",
+                ["`"] = "%60",
+                ["{"] = "%7b",
+                ["|"] = "%7c",
+                ["}"] = "%7d",
+                ["~"] = "%7e",
+            };
+
+            private string UrlEncode(string i)
+            {
+                string j = i;
+                foreach (var kv in UrlEncodeTable)
+                {
+                    j = j.Replace(kv.Key, kv.Value);
+                }
+                return j;
+            }
+
+            public ShadowSocksConfig(string hostname, int port, string password, Method method, Dictionary<string, string> parameters, string tag = null)
+            {
+                this.hostname = Uri.CheckHostName(hostname) == UriHostNameType.IPv6
+                    ? $"[{hostname}]"
+                    : hostname;
                 if (port < 1 || port > 65535)
                     throw new ShadowSocksConfigException("Value of 'port' must be within 0 and 65535.");
                 this.port = port;
@@ -2045,45 +2135,75 @@ namespace QRCoder
                 this.method = method;
                 this.methodStr = encryptionTexts[method.ToString()];
                 this.tag = tag;
+
+                if (parameters != null)
+                    this.parameter =
+                        string.Join("&",
+                        parameters.Select(
+                            kv => $"{UrlEncode(kv.Key)}={UrlEncode(kv.Value)}"
+                        ).ToArray());
             }
 
             public override string ToString()
             {
-                var connectionString = $"{methodStr}:{password}@{hostname}:{port}";
-                var connectionStringEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(connectionString));
-                return $"ss://{connectionStringEncoded}{(!string.IsNullOrEmpty(tag) ? $"#{tag}" : string.Empty)}";
+                if (string.IsNullOrEmpty(parameter))
+                {
+                    var connectionString = $"{methodStr}:{password}@{hostname}:{port}";
+                    var connectionStringEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(connectionString));
+                    return $"ss://{connectionStringEncoded}{(!string.IsNullOrEmpty(tag) ? $"#{tag}" : string.Empty)}";
+                }
+                var authString = $"{methodStr}:{password}";
+                var authStringEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(authString))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .TrimEnd('=');
+                return $"ss://{authStringEncoded}@{hostname}:{port}/?{parameter}{(!string.IsNullOrEmpty(tag) ? $"#{tag}" : string.Empty)}";
             }
 
             public enum Method
             {
+                // AEAD
+                Chacha20IetfPoly1305,
+                Aes128Gcm,
+                Aes192Gcm,
+                Aes256Gcm,
+                // AEAD, not standard
+                XChacha20IetfPoly1305,
+                // Stream cipher
                 Aes128Cfb,
-                Aes128Cfb1,
-                Aes128Cfb8,
-                Aes128Ctr,
-                Aes128Ofb,
                 Aes192Cfb,
-                Aes192Cfb1,
-                Aes192Cfb8,
+                Aes256Cfb,
+                Aes128Ctr,
                 Aes192Ctr,
-                Aes192Ofb,
-                Aes256Cb,
-                Aes256Cfb1,
-                Aes256Cfb8,
                 Aes256Ctr,
-                Aes256Ofb,
-                BfCfb,
                 Camellia128Cfb,
                 Camellia192Cfb,
                 Camellia256Cfb,
-                Cast5Cfb,
+                Chacha20Ietf,
+                // alias of Aes256Cfb
+                Aes256Cb,
+                // Stream cipher, not standard
+                Aes128Ofb,
+                Aes192Ofb,
+                Aes256Ofb,
+                Aes128Cfb1,
+                Aes192Cfb1,
+                Aes256Cfb1,
+                Aes128Cfb8,
+                Aes192Cfb8,
+                Aes256Cfb8,
+                // Stream cipher, deprecated
                 Chacha20,
+                BfCfb,
+                Rc4Md5,
+                Salsa20,
+                // Not standard and not in acitve use
                 DesCfb,
                 IdeaCfb,
                 Rc2Cfb,
-                Rc4,
-                Rc4Md5,
-                Salsa20,
+                Cast5Cfb,
                 Salsa20Ctr,
+                Rc4,
                 SeedCfb,
                 Table
             }
@@ -2275,10 +2395,23 @@ namespace QRCoder
             return structurallyValid && checksumValid;
         }
 
+        private static bool IsValidQRIban(string iban)
+        {
+            var foundQrIid = false;
+            try
+            {
+                var ibanCleared = iban.ToUpper().Replace(" ", "").Replace("-", "");
+                var possibleQrIid = Convert.ToInt32(ibanCleared.Substring(4, 5));
+                foundQrIid = possibleQrIid >= 30000 && possibleQrIid <= 31999;
+            } catch { }
+            return IsValidIban(iban) && foundQrIid;
+        }
+
         private static bool IsValidBic(string bic)
         {
             return Regex.IsMatch(bic.Replace(" ", ""), @"^([a-zA-Z]{4}[a-zA-Z]{2}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?)$");
         }
+
 
         private static string ConvertStringToEncoding(string message, string encoding)
         {

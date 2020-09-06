@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETFRAMEWORK || NETSTANDARD2_0
+using System;
 using System.Drawing;
 using System.Text;
 using static QRCoder.QRCodeGenerator;
@@ -47,7 +48,7 @@ namespace QRCoder
             var drawableModulesCount = this.QrCodeData.ModuleMatrix.Count - (drawQuietZones ? 0 : offset * 2);
             var pixelsPerModule = (double)Math.Min(viewBox.Width, viewBox.Height) / (double)drawableModulesCount;
             var qrSize = drawableModulesCount * pixelsPerModule;
-            var svgSizeAttributes = sizingMode.Equals(SizingMode.WidthHeightAttribute) ? $@"width=""{viewBox.Width}"" height=""{viewBox.Height}""" : $@"viewBox=""0 0 {viewBox.Width} {viewBox.Height}""";
+            var svgSizeAttributes = (sizingMode == SizingMode.WidthHeightAttribute) ? $@"width=""{viewBox.Width}"" height=""{viewBox.Height}""" : $@"viewBox=""0 0 {viewBox.Width} {viewBox.Height}""";
             var svgFile = new StringBuilder($@"<svg version=""1.1"" baseProfile=""full"" shape-rendering=""crispEdges"" {svgSizeAttributes} xmlns=""http://www.w3.org/2000/svg"">");
             svgFile.AppendLine($@"<rect x=""0"" y=""0"" width=""{CleanSvgVal(qrSize)}"" height=""{CleanSvgVal(qrSize)}"" fill=""{lightColorHex}"" />");
             for (int xi = offset; xi < offset + drawableModulesCount; xi++)
@@ -90,3 +91,5 @@ namespace QRCoder
         }
     }
 }
+
+#endif

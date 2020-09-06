@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
 [assembly: AssemblyTitle("QRCoder")]
-[assembly: AssemblyDescription("A free-to-use QR code library")]
+[assembly: AssemblyDescription("QRCoder is a simple library, written in C#.NET, which enables you to create QR Codes. It's licensed under the MIT-license.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("www.code-bude.net")]
 [assembly: AssemblyProduct("QRCoder")]
-[assembly: AssemblyCopyright("Free to use (MIT license)")]
+[assembly: AssemblyCopyright("Copyright © www.code-bude.net / Raffael Herrmann.  All rights reserved.")]
 [assembly: AssemblyTrademark("written by Raffael Herrmann")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.7.0")]
-[assembly: AssemblyFileVersion("1.3.7.0")]
+[assembly: AssemblyVersion("1.4.0.0")]
+[assembly: AssemblyFileVersion("1.4.0.0")]
